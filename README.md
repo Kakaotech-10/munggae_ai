@@ -16,4 +16,3 @@ API 통신 - FastAPI, Flask
 아바타 생성 - hugging face, DALL-E, Diffusion Model
 
 모델 학습 - Tensorflow, Pytorch
-
