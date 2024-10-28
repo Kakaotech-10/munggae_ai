@@ -1,0 +1,25 @@
+# FastAPI framework and related dependencies
+fastapi
+uvicorn
+requests
+
+# Numerical computation and array operations
+numpy
+
+# Standard library for interacting with the operating system
+os
+
+# Data manipulation and analysis
+pandas
+
+# OpenAI API for NLP chatbot functionalities
+openai
+
+# Image processing and optical character recognition
+opencv-python
+easyocr
+
+torch
+torchvision
+torchaudio
+
