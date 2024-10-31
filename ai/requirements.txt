@@ -6,20 +6,22 @@ requests
 # Numerical computation and array operations
 numpy
 
-# Standard library for interacting with the operating system
-os
-
 # Data manipulation and analysis
 pandas
 
 # OpenAI API for NLP chatbot functionalities
 openai
 
-# Image processing and optical character recognition
-opencv-python
-easyocr
-
+# PyTorch and related libraries for deep learning
 torch
-torchvision
-torchaudio
 
+# Hugging Face datasets and transformers
+datasets==1.17.0
+transformers
+accelerate>=0.21.0
+
+sentencepiece
+
+
+#'git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf'
+#이거 실행할때 다운해야하는데 서버에서도 다운해야하는지 모르겠어요!   
