@@ -42,7 +42,7 @@ for index, row in hatescore_data.iterrows():
     if microlabel in label_mapping:
         hatescore_mapped_df.at[index, label_mapping[microlabel]] = 1
     else:
-        hatescore_mapped_df.at[index, 'clean'] = 1  # If it's not in the mapping, mark it as '기타 혐오'
+        hatescore_mapped_df.at[index, 'clean'] = 1  # If it's not in the mapping, mark it as 'clean'
 
 # Show the transformed hatescore_mapped_df DataFrame
 hatescore_mapped_df.head()

@@ -13,21 +13,25 @@ class TextRequest(BaseModel):
 
 @app.post("/api/v1/comments/")
 def text_filtering_api(request: TextRequest):
-    result = predict_hate_speech(model, tokenizer, request.text)  
-    
-    if 'clean' not in result:
+    try:
+        result = predict_hate_speech(model, tokenizer, request.text)  
+        
+        if 'clean' not in result:
+            return{
+                "origin_text": request.text,
+                "filtered_labels": result,
+                "message": f"{result}에 위배되는 문장입니다."
+            }
+
+        #clean일 경우
         return{
             "origin_text": request.text,
-            "filtered_labels": result,
-            "message": f"{result}에 위배되는 문장입니다."
+            "filtered_labels": ["clean"],
+            "message": f"{request.text}"
         }
-
-    #clean일 경우
-    return{
-        "origin_text": request.text,
-        "filtered_labels": ["clean"],
-        "message": f"{request.text}"
-    }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
 
 
 
