@@ -20,6 +20,6 @@ RUN python -c "from transformers import BertForSequenceClassification; BertForSe
 # 애플리케이션 파일 복사
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8000
 
-CMD ["uvicorn", "ai_server:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "ai_server:app", "--host", "0.0.0.0", "--port", "8000"]
