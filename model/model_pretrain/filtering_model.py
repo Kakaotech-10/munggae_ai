@@ -1,4 +1,4 @@
-from transformers import BertForSequenceClassification, AutoTokenizer
+from transformers import BertForSequenceClassification
 from kobert_tokenizer import KoBERTTokenizer
 import torch
 import os
