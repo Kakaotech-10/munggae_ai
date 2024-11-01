@@ -21,7 +21,6 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         script {
                             def imageTag = "${env.BUILD_NUMBER}"
-                            sh 'ls build/libs'
                             sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                             sh "docker build -t ${AI_IMAGE_REPO}:${imageTag} -f Dockerfile ."
                             sh "docker push ${AI_IMAGE_REPO}:${imageTag}"
