@@ -18,11 +18,17 @@ API 통신 - FastAPI
 """
 모델 lfs다운로드 & 업로드 과정
 """
+
 git lfs install : 깃 lfs 다운로드 
+
 cd model/koBERT_model_v1.01
+
 git lfs track "*.safetensor" : 대용량 파일 지정
+
 git add .gitattributes
 
 git add *safetensor
+
 git commit -m "커밋메시지"
+
 git push origin main
