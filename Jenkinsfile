@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
-        AI_IMAGE_REPO = "ella00/munggae-ai" 
+        AI_IMAGE_REPO = "ella00/munggae-ai"
+        AI_API_KEY = credentials('ai-api-key')
     }
     stages {
         stage('Checkout') {
@@ -33,6 +34,15 @@ pipeline {
                 sh 'git lfs ls-files'
             }
         }
+        
+        stage('Set Environment Variable') {
+            steps {
+                script {
+                    sh 'echo "api_key=${AI_API_KEY}" >> .env'
+                }
+            }
+        }
+        
         stage('Build and Push Docker Image') {
             agent { label 'dind-agent' }
             when {
