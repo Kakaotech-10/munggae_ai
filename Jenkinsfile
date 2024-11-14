@@ -29,7 +29,7 @@ pipeline {
                 script {
                     sh 'echo "api_key=${AI_API_KEY}" >> .env'
                     sh 'cd ..'
-                    stash includes: 'munggae_ai', name: 'munggae_ai'
+                    stash includes: '**/*', name: 'munggae_ai'
                 }
             }
         }
@@ -41,7 +41,6 @@ pipeline {
                     unstash 'munggae_ai'
                     withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         def imageTag = "${env.BUILD_NUMBER}"
-                        sh "cd munggae_ai"
                         sh 'ls -lh model/koBERT_model_v1.01/model.safetensors'
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                         sh "docker build -t ${AI_IMAGE_REPO}:${imageTag} -f Dockerfile ."
@@ -54,6 +53,9 @@ pipeline {
             agent { label 'java-docker' }
             steps {
                 script {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], 
+                              extensions: [[$class: 'CleanBeforeCheckout']], 
+                              userRemoteConfigs: [[url: 'https://github.com/Kakaotech-10/munggae-manifest.git']]])
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh """
                         git config --local user.email "als33396dn@gmail.com"
@@ -70,7 +72,7 @@ pipeline {
                         fi
                         echo "Current directory after navigation:"
                         ls -la
-                        # Update image tag in deployment.yaml with the new build number
+                        # Update image tag in FastAPI-munggae.yaml with the new build number
                         sed -i "s|image: ella00/munggae-ai:.*|image: ella00/munggae-ai:${env.BUILD_NUMBER}|" FastAPI-munggae.yaml
                         # Commit and push the changes
                         git add .
