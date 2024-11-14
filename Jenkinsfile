@@ -5,33 +5,23 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         AI_IMAGE_REPO = "ella00/munggae-ai"
         AI_API_KEY = credentials('ai-api-key')
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_DEFAULT_REGION = credentials('aws-region')
+        S3_BUCKET = credentials('munggae-ai-kobert')
     }
     stages {
-        stage('Checkout') {
+        stage('Checkout and Download model') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: 'main']], // 'main' 브랜치 체크아웃
-                    doGenerateSubmoduleConfigurations: false,
-                    extensions: [
-                        [$class: 'GitLFSPull'], // Git LFS 파일을 다운로드하기 위한 설정
-                        [$class: 'CheckoutOption', timeout: 20], // 체크아웃 타임아웃 설정
-                        [$class: 'CloneOption',
-                            depth: 0, // 모든 커밋 히스토리를 클론
-                            noTags: false, // 태그 포함
-                            shallow: false, // 전체 클론 수행
-                            timeout: 120 // 클론 타임아웃 설정
-                        ]
-                    ],
-                    submoduleCfg: [],
-                    userRemoteConfigs: [
-                        [
-                            url: 'https://github.com/Kakaotech-10/munggae_ai' // Git 리포지토리 URL
-                        ]
-                    ]
-                ])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], 
+                          extensions: [[$class: 'CleanBeforeCheckout']], 
+                          userRemoteConfigs: [[url: 'https://github.com/Kakaotech-10/munggae_ai.git']]])
+                sh 'rm -rf model/koBERT_model_v1.01'
+                echo "Downloading Model from S3..."
+                sh """
+                    aws s3 cp s3://$S3_BUCKET/ model/ --recursive
+                """
                 sh 'ls -lh model/koBERT_model_v1.01/model.safetensors'
-                sh 'git lfs ls-files'
             }
         }
         
