@@ -19,7 +19,7 @@ pipeline {
                 sh 'rm -rf model/koBERT_model_v1.01'
                 echo "Downloading Model from S3..."
                 sh """
-                    aws s3 cp s3://$S3_BUCKET/ model/ --recursive
+                    aws s3 cp s3://munggae-ai-kobert/ model/ --recursive
                 """
                 sh 'ls -lh model/koBERT_model_v1.01/model.safetensors'
             }
