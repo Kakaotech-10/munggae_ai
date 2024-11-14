@@ -49,7 +49,7 @@ def generate_response(text: str, labels: Set[str], is_clean: bool) -> TextRespon
     return TextResponse(text=text, labels=list(labels), message=message)
 
 # 텍스트 필터링 API 엔드포인트
-@app.post("/api/v1/ai/text/", response_model=TextResponse)
+@app.post("/api/v1/ai/text", response_model=TextResponse)
 def filter_text(request: TextRequest):
     """텍스트 필터링 API 엔드포인트: 유해성 검열"""
     try:
