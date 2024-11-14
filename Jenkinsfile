@@ -16,7 +16,6 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], 
                           extensions: [[$class: 'CleanBeforeCheckout']], 
                           userRemoteConfigs: [[url: 'https://github.com/Kakaotech-10/munggae_ai.git']]])
-                sh 'rm -rf model/koBERT_model_v1.01'
                 echo "Downloading Model from S3..."
                 sh """
                     aws s3 cp s3://munggae-ai-kobert/ model/ --recursive
@@ -29,19 +28,21 @@ pipeline {
             steps {
                 script {
                     sh 'echo "api_key=${AI_API_KEY}" >> .env'
+                    sh 'cd ..'
+                    stash includes: 'munggae_ai', name: 'munggae_ai'
                 }
             }
         }
         
         stage('Build and Push Docker Image') {
             agent { label 'dind-agent' }
-            when {
-                branch 'main'
-            }
             steps {
                 script {
+                    unstash 'munggae_ai'
                     withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         def imageTag = "${env.BUILD_NUMBER}"
+                        sh "cd munggae_ai"
+                        sh 'ls -lh model/koBERT_model_v1.01/model.safetensors'
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                         sh "docker build -t ${AI_IMAGE_REPO}:${imageTag} -f Dockerfile ."
                         sh "docker push ${AI_IMAGE_REPO}:${imageTag}"
@@ -53,9 +54,6 @@ pipeline {
             agent { label 'java-docker' }
             steps {
                 script {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/main']],
-                              extensions: [[$class: 'CleanBeforeCheckout']],
-                              userRemoteConfigs: [[url: 'https://github.com/Kakaotech-10/munggae-manifest.git']]])
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh """
                         git config --local user.email "als33396dn@gmail.com"
