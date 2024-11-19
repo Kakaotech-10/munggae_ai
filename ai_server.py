@@ -1,4 +1,5 @@
 import re
+import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Set
@@ -9,6 +10,10 @@ app = FastAPI()
 
 # 모델 및 토크나이저 로드
 model, tokenizer = load_model()
+
+#로거 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # 요청 데이터 모델 정의
 class TextRequest(BaseModel):
@@ -53,6 +58,8 @@ def generate_response(text: str, labels: Set[str], is_clean: bool) -> TextRespon
 def filter_text(request: TextRequest):
     """텍스트 필터링 API 엔드포인트: 유해성 검열"""
     try:
+        #요청 데이터 로깅
+        logger.info(f"request.text = {request.text}")
         text_chunks = split_text_by_sentences(request.text, max_length=512)
         overall_labels = set()
 
@@ -62,10 +69,15 @@ def filter_text(request: TextRequest):
 
         # 유해한 라벨 필터링
         if 'clean' not in overall_labels:
-            return generate_response(request.text, overall_labels, is_clean=False)
+            response = generate_response(request.text, overall_labels, is_clean=False)
+            logger.info(f"response = {response}")
+            return response
 
         # 'clean'인 경우
-        return generate_response(request.text, {"clean"}, is_clean=True)
+        response = generate_response(request.text, {"clean"}, is_clean=True)
+        logger.info(f"response = {response}")
+        return response
+
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"서버 내부 오류가 발생했습니다: {str(e)}")
