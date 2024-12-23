@@ -90,6 +90,12 @@ def filter_text(request: TextRequest):
         logger.error(f"Error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=f"서버 내부 오류가 발생했습니다: {str(e)}")
 
+@app.get("/healthcheck")
+async def healthcheck():
+    """
+    단순 헬스 체크를 위한 엔드포인트
+    """
+    return {"status": "ok"}
 # uvicorn 명령어 예시
 # uvicorn ai_server:app --reload
 # /opt/homebrew/bin/python3 -m uvicorn ai_server:app --reload -> lucy환경실행
